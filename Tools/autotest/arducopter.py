@@ -1078,7 +1078,7 @@ class AutoTestCopter(AutoTest):
     def fly_fence_avoid_test_radius_check(self, timeout=180, avoid_behave=avoid_behave_slide):
         using_mode = "LOITER" # must be something which adjusts velocity!
         self.change_mode(using_mode)
-        self.set_parameter("FENCE_AUTOENABLE", 1) # fence
+        self.set_parameter("FENCE_ENABLE", 1) # fence
         self.set_parameter("FENCE_TYPE", 2) # circle
         fence_radius = 15
         self.set_parameter("FENCE_RADIUS", fence_radius)
@@ -1189,7 +1189,7 @@ class AutoTestCopter(AutoTest):
             raise NotAchievedException("Did not receive HOME_POSITION")
         self.progress("home: %s" % str(m))
 
-        self.start_subtest("ensure we can't arm if ouside fence")
+        self.start_subtest("ensure we can't arm if outside fence")
         self.load_fence_using_mavproxy("fence-in-middle-of-nowhere.txt")
         self.delay_sim_time(5) # let fence check run so it loads-from-eeprom
         self.assert_prearm_failure("vehicle outside fence")
@@ -1197,7 +1197,7 @@ class AutoTestCopter(AutoTest):
         self.clear_fence()
         self.delay_sim_time(5) # let fence breach clear
         self.drain_mav()
-        self.end_subtest("ensure we can't arm if ouside fence")
+        self.end_subtest("ensure we can't arm if outside fence")
 
         self.start_subtest("ensure we can't arm with bad radius")
         self.context_push()
@@ -1273,12 +1273,13 @@ class AutoTestCopter(AutoTest):
             "Fence test failed to reach home (%fm distance) - "
             "timed out after %u seconds" % (home_distance, timeout,))
 
-    # fly_alt_fence_test - fly up until you hit the fence
+    # fly_alt_max_fence_test - fly up until you hit the fence
     def fly_alt_max_fence_test(self):
         self.takeoff(10, mode="LOITER")
         """Hold loiter position."""
 
         # enable fence, disable avoidance
+        self.set_parameter("FENCE_ENABLE", 1)
         self.set_parameter("FENCE_AUTOENABLE", 1)
         self.set_parameter("AVOID_ENABLE", 0)
         self.set_parameter("FENCE_TYPE", 1)
@@ -1308,7 +1309,7 @@ class AutoTestCopter(AutoTest):
 
         self.zero_throttle()
 
-    # fly_alt_fence_test - fly up until you hit the fence
+    # fly_alt_min_fence_test - fly down until you hit the fence
     def fly_alt_min_fence_test(self):
         self.takeoff(50, mode="LOITER", timeout=120)
         """Hold loiter position."""
@@ -1316,11 +1317,13 @@ class AutoTestCopter(AutoTest):
         self.wait_mode('LOITER')
 
         # enable fence, disable avoidance
+        self.set_parameter("FENCE_ENABLE", 1)
         self.set_parameter("FENCE_AUTOENABLE", 1)
         self.set_parameter("AVOID_ENABLE", 0)
         self.set_parameter("FENCE_TYPE", 8)
+        self.set_parameter("FENCE_ALT_MIN", 20)
 
-        self.change_alt(10)
+        self.change_alt(50)
 
         # first east
         self.progress("turn east")
@@ -4953,7 +4956,7 @@ class AutoTestCopter(AutoTest):
         ex = None
         try:
             self.load_fence("copter-avoidance-fence.txt")
-            self.set_parameter("FENCE_AUTOENABLE", 1)
+            self.set_parameter("FENCE_ENABLE", 1)
             self.set_parameter("PRX_TYPE", 10)
             self.set_parameter("RC10_OPTION", 40) # proximity-enable
             self.reboot_sitl()
@@ -4976,7 +4979,7 @@ class AutoTestCopter(AutoTest):
         ex = None
         try:
             self.load_fence("copter-avoidance-fence.txt")
-            self.set_parameter("FENCE_AUTOENABLE", 1)
+            self.set_parameter("FENCE_ENABLE", 1)
             self.check_avoidance_corners()
         except Exception as e:
             self.progress("Caught exception: %s" %
@@ -6125,7 +6128,7 @@ class AutoTestCopter(AutoTest):
              self.fly_alt_max_fence_test), #26s
 
             ("MinAltFence",
-             "Test Max Alt Fence",
+             "Test Min Alt Fence",
              self.fly_alt_min_fence_test), #26s
 
             ("AutoTuneSwitch", 
