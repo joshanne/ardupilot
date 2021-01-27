@@ -1135,7 +1135,9 @@ class AutoTest(ABC):
                  _show_test_timings=False,
                  logs_dir=None,
                  force_ahrs_type=None,
-                 sup_binary=None):
+                 sup_binary=None,
+                 skipsubtest=None,
+                 runsubtest=None):
 
         self.start_time = time.time()
         global __autotest__ # FIXME; make progress a non-staticmethod
@@ -1155,6 +1157,8 @@ class AutoTest(ABC):
         self.disable_breakpoints = disable_breakpoints
         self.speedup = speedup
         self.sup_binary = sup_binary
+        self.skipsubtest = skipsubtest.split(',')
+        self.runsubtest = runsubtest.split(',')
 
         self.mavproxy = None
         self.mav = None
@@ -9365,6 +9369,28 @@ switch value'''
             (name, desc, func) = test
             actual_test = Test(name, desc, func)
             all_tests.append(actual_test)
+
+        # Of all the possible tests, only add the tests desired
+        new_tests = []
+        for test in all_tests:
+            for runtest in self.runsubtest:
+                if test.name == runtest:
+                    new_tests.append(test)
+                    self.runsubtest.remove(runtest)
+                    break
+        all_tests = new_tests
+
+        # Of the available tests, skip those we don't want to run
+        new_tests = []
+        for test in all_tests:
+            found = False
+            for skiptest in self.skipsubtest:
+                if test.name == skiptest:
+                    found = True
+                    break
+            if not found:
+                new_tests.append(test)
+        all_tests = new_tests
 
         disabled = self.disabled_tests()
         tests = []

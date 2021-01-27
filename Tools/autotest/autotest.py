@@ -465,6 +465,8 @@ def run_step(step):
         "force_ahrs_type": opts.force_ahrs_type,
         "logs_dir": buildlogs_dirpath(),
         "sup_binary": supplementary_binary,
+        "skipsubtest": opts.skipsubtest,
+        "runsubtest": opts.runsubtest,
     }
     if opts.speedup is not None:
         fly_opts["speedup"] = opts.speedup
@@ -776,6 +778,14 @@ if __name__ == "__main__":
                       type='string',
                       default='',
                       help='list of steps to skip (comma separated)')
+    parser.add_option("--skipsubtest",
+                      type='string',
+                      default='',
+                      help='list of subtests to skip (comma separated)')
+    parser.add_option("--runsubtest",
+                      type='string',
+                      default='',
+                      help='list of subtests to run (comma separated)')
     parser.add_option("--list",
                       action='store_true',
                       default=False,
@@ -1004,6 +1014,10 @@ if __name__ == "__main__":
         else:
             new_skipsteps.append(skipstep)
     skipsteps = new_skipsteps
+
+    skipsubtests = opts.skipsubtest.split(',')
+
+    runsubtests = opts.runsubtest.split(',')
 
     # ensure we catch timeouts
     signal.signal(signal.SIGALRM, alarm_handler)
