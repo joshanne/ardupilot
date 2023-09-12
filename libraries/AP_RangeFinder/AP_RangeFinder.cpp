@@ -55,6 +55,7 @@
 #include "AP_RangeFinder_NoopLoop.h"
 #include "AP_RangeFinder_TOFSenseP_CAN.h"
 #include "AP_RangeFinder_NRA24_CAN.h"
+#include "AP_RangeFinder_Broadcom_AFBR_S50.h"
 
 #include <AP_BoardConfig/AP_BoardConfig.h>
 #include <AP_Logger/AP_Logger.h>
@@ -556,6 +557,10 @@ void RangeFinder::detect_instance(uint8_t instance, uint8_t& serial_instance)
         _add_backend(new AP_RangeFinder_NRA24_CAN(state[instance], params[instance]), instance);
 #endif
         break;
+    case Type::Broadcom_AFBRS50:
+        if (AP_RangeFinder_Broadcom_AFBRS50::detect()) {
+            _add_backend(new AP_RangeFinder_Broadcom_AFBRS50(state[instance], params[instance]), instance);
+        }
 
     case Type::NONE:
         break;

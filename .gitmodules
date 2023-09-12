@@ -39,3 +39,6 @@
 	path = modules/Micro-CDR
 	url = https://github.com/ardupilot/Micro-CDR.git
 	branch = master
+[submodule "modules/drivers/broadcom/AFBR-S50"]
+	path = modules/drivers/broadcom/AFBR-S50
+	url = git@github.com:Broadcom/AFBR-S50-API.git

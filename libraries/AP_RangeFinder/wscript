@@ -1,0 +1,27 @@
+
+
+from waflib.TaskGen import after_method, before_method, feature
+import os
+import shutil
+
+
+def configure(cfg):
+    """test"""
+
+
+def build(bld):
+    RANGEFINDER_LIBS = {
+    'cortex-m4' : 'libafbrs50_m4_fpu.a'
+    }
+    if bld.env.CORTEX in RANGEFINDER_LIBS:
+        path_AFBR_S50 = 'modules/drivers/broadcom/AFBR-S50/AFBR-S50'
+        libname = RANGEFINDER_LIBS[bld.env.CORTEX]
+        # we need to copy the library on cygwin as it doesn't handle linking outside build tree
+        shutil.copyfile(os.path.join(bld.env.SRCROOT, path_AFBR_S50, "Lib", libname),
+        os.path.join(bld.env.BUILDROOT,'libraries/AP_RangeFinder/libAFBR-S50-API.a'))
+        bld.env.LIB += ['AFBR-S50-API']
+        bld.env.LIBPATH += ['libraries/AP_RangeFinder']
+        bld.env.INCLUDES += [os.path.join(bld.env.SRCROOT, path_AFBR_S50, "Include")]
+
+
+

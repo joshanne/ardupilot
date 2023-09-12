@@ -96,6 +96,7 @@ public:
         NoopLoop_P = 37,
         TOFSenseP_CAN = 38,
         NRA24_CAN = 39,
+        Broadcom_AFBRS50 = 40,
         SIM = 100,
     };
 
