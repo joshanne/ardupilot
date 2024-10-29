@@ -83,7 +83,7 @@
 // RESET		finalise flash programming, reset chip and starts application
 //
 
-#define BL_PROTOCOL_VERSION 		5		// The revision of the bootloader protocol
+#define BL_PROTOCOL_VERSION 		6		// The revision of the bootloader protocol
 // protocol bytes
 #define PROTO_INSYNC				0x12    // 'in sync' byte sent before status
 #define PROTO_EOC					0x20    // end of command
@@ -128,6 +128,7 @@
 #define PROTO_DEVICE_FW_SIZE	4	// size of flashable area
 #define PROTO_DEVICE_VEC_AREA	5	// contents of reserved vectors 7-10
 #define PROTO_DEVICE_EXTF_SIZE  6   // size of available external flash
+#define PROTO_DEVICE_BL_GIT_HASH 7  // git hash of bootloader build
 // all except PROTO_DEVICE_VEC_AREA and PROTO_DEVICE_BOARD_REV should be done
 #define CHECK_GET_DEVICE_FINISHED(x)   ((x & (0xB)) == 0xB)
 
@@ -601,6 +602,10 @@ bootloader(unsigned timeout)
 
             case PROTO_DEVICE_EXTF_SIZE:
                 cout((uint8_t *)&board_info.extf_size, sizeof(board_info.extf_size));
+                break;
+            
+            case PROTO_DEVICE_BL_GIT_HASH:
+                cout((uint8_t *)&board_info.git_hash, sizeof(board_info.git_hash));
                 break;
 
             default:

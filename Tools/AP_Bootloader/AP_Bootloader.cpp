@@ -39,6 +39,10 @@
 #include <AP_CheckFirmware/AP_CheckFirmware.h>
 #include "network.h"
 
+#define FORCE_VERSION_H_INCLUDE
+#include "ap_version.h"
+#undef FORCE_VERSION_H_INCLUDE
+
 extern "C" {
     int main(void);
 }
@@ -47,7 +51,8 @@ struct boardinfo board_info = {
     .board_type = APJ_BOARD_ID,
     .board_rev = 0,
     .fw_size = (BOARD_FLASH_SIZE - (FLASH_BOOTLOADER_LOAD_KB + FLASH_RESERVE_END_KB + APP_START_OFFSET_KB))*1024,
-    .extf_size = (EXT_FLASH_SIZE_MB * 1024 * 1024) - (EXT_FLASH_RESERVE_START_KB + EXT_FLASH_RESERVE_END_KB) * 1024
+    .extf_size = (EXT_FLASH_SIZE_MB * 1024 * 1024) - (EXT_FLASH_RESERVE_START_KB + EXT_FLASH_RESERVE_END_KB) * 1024,
+    .git_hash = GIT_VERSION_INT
 };
 
 #ifndef HAL_BOOTLOADER_TIMEOUT
