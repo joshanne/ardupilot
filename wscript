@@ -19,7 +19,6 @@ import build_options
 import glob
 
 from waflib import Build, ConfigSet, Configure, Context, Utils
-from waflib.Configure import conf
 
 # TODO: implement a command 'waf help' that shows the basic tasks a
 # developer might want to do: e.g. how to configure a board, compile a
@@ -51,7 +50,7 @@ def _set_build_context_variant(board):
         c.variant = board
 
 # Remove all submodules and then sync
-@conf
+@Configure.conf
 def submodule_force_clean(ctx):
     whitelist = {
                             'COLCON_IGNORE',
@@ -69,7 +68,7 @@ def submodule_force_clean(ctx):
     submodulesync(ctx)
 
 # run Tools/gittools/submodule-sync.sh to sync submodules
-@conf
+@Configure.conf
 def submodulesync(ctx):
     subprocess.call(['Tools/gittools/submodule-sync.sh'])
 
@@ -705,7 +704,7 @@ def list_boards(ctx):
 def list_ap_periph_boards(ctx):
     print(*boards.get_ap_periph_boards())
 
-@conf
+@Configure.conf
 def ap_periph_boards(ctx):
     return boards.get_ap_periph_boards()
 
